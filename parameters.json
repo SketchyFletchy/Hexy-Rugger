@@ -2,6 +2,7 @@
     "width": 8,
     "height": 10,
     "alternateRows": "in",
+    "hexWidth": 5,
     "colours": [
         [255,255,255],
         [200,200,200],
@@ -9,5 +10,5 @@
         [0,0,0]
     ],
     "gradientAngle": 90,
-    "scatter": 0
+    "scatter": 0.0
 }
