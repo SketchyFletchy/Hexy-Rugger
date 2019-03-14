@@ -2,15 +2,17 @@
 
 import sys
 import json
+import math
 
 parameterSourceFile = "./parameters.json"
-
 
 def main():
     """Main entry point of script."""
     param = loadParameters(parameterSourceFile)
-    hexArray = genArray(param["width"], param["height"], param["hexWidth"], param["alternateRows"])
-    hexArray = colourMap()
+    hexArray, yMax, xMax = genArray(**param)    
+    colourMap = gencolourMap(yMax, param['colours'])
+    hexArray = [ colourMap(point) for point in hexArray]
+    # GENERATE AN SVG FROM ARRAY INPUTS
     pass
 
 def loadParameters(parameterSource):
@@ -22,7 +24,7 @@ def loadParameters(parameterSource):
         print("Failed to parse parameters file.")
     return paramDict
 
-def genArray(width, height, hexWidth, alternateRows):
+def genArray(width, height, hexWidth, alternateRows, **kwargs):
     """Creates an array of hex origins and colour assignments."""
     outArray = []
     for row in range(height):
@@ -30,10 +32,19 @@ def genArray(width, height, hexWidth, alternateRows):
         if alternateRows == "in" and height%2 == 0:
             rowOffset = 1
         for piece in range(width - rowOffset):
-            outArray.append((piece*hexWidth+((row % 2)*hexWidth/2), row*hexWidth/1.73205, 0, 0, 0))
-    return outArray
+            outArray.append((piece*hexWidth+((row % 2)*hexWidth/2), row*hexWidth/1.73205, 0))
+    yMax = outArray[-1][1]
+    xMax = outArray[-1][0]
+    print("Max position: ({},{})".format(xMax, yMax))
+    return outArray, yMax, xMax
 
-def colourMap (angle, scatter)
+def gencolourMap( yMax, colArray ):
+    """Massive cheat just for the moment, thanks Griff!"""
+    def colourMap(point):
+        colourIndex = math.floor((len(colArray)-1)*(point[1] / yMax)) 
+        outPoint = (point[0], point[1], colourIndex)
+        return outPoint
+    return colourMap
 
 def generateSVG():
     """outputs a .csv file of the mapped hex tiles"""
