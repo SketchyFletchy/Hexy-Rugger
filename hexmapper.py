@@ -3,6 +3,7 @@
 import sys
 import json
 import math
+import cairocffi as cairo
 
 parameterSourceFile = "./parameters.json"
 
@@ -11,8 +12,9 @@ def main():
     param = loadParameters(parameterSourceFile)
     hexArray, yMax, xMax = genArray(**param)    
     colourMap = gencolourMap(yMax, param['colours'])
+    svgHexDraw = genSVG(param['windowWidth'], param['windowHeight'])
     hexArray = [ colourMap(point) for point in hexArray]
-    # GENERATE AN SVG FROM ARRAY INPUTS
+    [ svgHexDraw(point, param['hexHeight'], param['colours']) for point in hexArray ]
     pass
 
 def loadParameters(parameterSource):
@@ -24,18 +26,18 @@ def loadParameters(parameterSource):
         print("Failed to parse parameters file.")
     return paramDict
 
-def genArray(width, height, hexWidth, alternateRows, **kwargs):
+def genArray(width, height, hexHeight, alternateRows, **kwargs):
     """Creates an array of hex origins and colour assignments."""
     outArray = []
     for row in range(height):
+        xStep = hexHeight*math.sqrt(3)/2
         rowOffset =0
         if alternateRows == "in" and height%2 == 0:
             rowOffset = 1
         for piece in range(width - rowOffset):
-            outArray.append((piece*hexWidth+((row % 2)*hexWidth/2), row*hexWidth/1.73205, 0))
+            outArray.append((piece*xStep+((row % 2)*xStep/2), row*hexHeight*3/4, 0))
     yMax = outArray[-1][1]
     xMax = outArray[-1][0]
-    print("Max position: ({},{})".format(xMax, yMax))
     return outArray, yMax, xMax
 
 def gencolourMap( yMax, colArray ):
@@ -46,9 +48,30 @@ def gencolourMap( yMax, colArray ):
         return outPoint
     return colourMap
 
-def generateSVG():
-    """outputs a .csv file of the mapped hex tiles"""
-    pass
+def genSVG(height, width):
+    """Outputs a .SVG file of the mapped hex tiles"""
+    surface = cairo.SVGSurface("outputs/latest.svg", width, height)
+    surface.set_document_unit(cairo.SVG_UNIT_MM)
+    ctxt = cairo.Context(surface)
+    ctxt.translate(15,15)
+    def drawHex(point, hexHeight, colours):
+        verts = [
+            (point[0], point[1]+hexHeight/2),
+            (point[0]+math.sqrt(3)*hexHeight/4, point[1]+hexHeight/4),
+            (point[0]+math.sqrt(3)*hexHeight/4, point[1]-hexHeight/4),
+            (point[0], point[1]-hexHeight/2),
+            (point[0]-math.sqrt(3)*hexHeight/4, point[1]-hexHeight/4),
+            (point[0]-math.sqrt(3)*hexHeight/4, point[1]+hexHeight/4)
+        ]
+        for coord in verts:
+            ctxt.line_to(coord[0],coord[1])
+        ctxt.close_path()
+        ctxt.set_source_rgb(0,0,0)
+        ctxt.set_line_width(1)
+        ctxt.stroke_preserve()
+        ctxt.set_source_rgb(*colours[point[2]])
+        ctxt.fill()
+    return drawHex
 
 if __name__ == '__main__':
     sys.exit(main())
