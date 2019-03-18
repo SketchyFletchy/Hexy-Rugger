@@ -1,6 +1,6 @@
 # Hex Mapper for Super Sweet Crochet work
 
-Fletcher Thompson, 2019. All rights reserved for now.
+Fletcher Thompson, 2019.
 
 ## Introduction
 
