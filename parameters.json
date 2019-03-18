@@ -1,6 +1,6 @@
 {
-    "width": 8,
-    "height": 10,
+    "width": 10,
+    "height": 12,
     "windowWidth": 100,
     "windowHeight": 100,
     "alternateRows": "in",
@@ -12,5 +12,5 @@
         [0,0.2,0.1]
     ],
     "gradientAngle": 90,
-    "scatter": 0.0
+    "scatter": 0.1
 }

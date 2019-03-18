@@ -3,6 +3,7 @@
 import sys
 import json
 import math
+import random
 import cairocffi as cairo
 
 parameterSourceFile = "./parameters.json"
@@ -13,9 +14,8 @@ def main():
     hexArray, yMax, xMax = genArray(**param)    
     colourMap = gencolourMap(yMax, param['colours'])
     svgHexDraw = genSVG(param['windowWidth'], param['windowHeight'])
-    hexArray = [ colourMap(point) for point in hexArray]
+    hexArray = [ colourMap(point, param['scatter']) for point in hexArray]
     [ svgHexDraw(point, param['hexHeight'], param['colours']) for point in hexArray ]
-    pass
 
 def loadParameters(parameterSource):
     """Pulls in config file and returns a queriable python dictionary."""
@@ -42,18 +42,28 @@ def genArray(width, height, hexHeight, alternateRows, **kwargs):
 
 def gencolourMap( yMax, colArray ):
     """Massive cheat just for the moment, thanks Griff!"""
-    def colourMap(point):
-        colourIndex = math.floor((len(colArray)-1)*(point[1] / yMax)) 
+    def colourMap(point, scatterVal):
+        colourNormal = (point[1] / yMax)+random.gauss(0, scatterVal)
+        colourIndex = quantiseNormalToIndex( colourNormal, (len(colArray))) 
         outPoint = (point[0], point[1], colourIndex)
         return outPoint
     return colourMap
+
+def quantiseNormalToIndex(normalVal, steps):
+    """Return zero referenced index value by quantising input normal value."""
+    level = math.floor(normalVal * steps)
+    if level >= (steps-1):
+        level = steps-1
+    elif level <= 0:
+        level = 0
+    return level
 
 def genSVG(height, width):
     """Outputs a .SVG file of the mapped hex tiles"""
     surface = cairo.SVGSurface("outputs/latest.svg", width, height)
     surface.set_document_unit(cairo.SVG_UNIT_MM)
     ctxt = cairo.Context(surface)
-    ctxt.translate(15,15)
+    ctxt.translate(10,10)
     def drawHex(point, hexHeight, colours):
         verts = [
             (point[0], point[1]+hexHeight/2),
