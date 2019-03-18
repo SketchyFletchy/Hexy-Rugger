@@ -1,16 +1,16 @@
 {
     "width": 10,
-    "height": 12,
-    "windowWidth": 100,
+    "height": 14,
+    "windowWidth": 120,
     "windowHeight": 100,
     "alternateRows": "in",
     "hexHeight": 10,
     "colours": [
         [0.7,1,0.7],
-        [0,1,0.1],
-        [0.05,0.5,0.1],
-        [0,0.2,0.1]
+        [0.1,0.9,0.2],
+        [0.05,0.6,0.2],
+        [0.2,0.35,0.6]
     ],
     "gradientAngle": 90,
-    "scatter": 0.1
+    "scatter": 0.6
 }
