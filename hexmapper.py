@@ -16,6 +16,9 @@ def main():
     svgHexDraw = genSVG(param['windowWidth'], param['windowHeight'])
     hexArray = [ colourMap(point, param['scatter']) for point in hexArray]
     [ svgHexDraw(point, param['hexHeight'], param['colours']) for point in hexArray ]
+    print("colour count:")
+    for index in range(len(param['colours'])):
+        print("Colour {}: {}".format(index, sum(1 for entry in hexArray if entry[2] == index)))
 
 def loadParameters(parameterSource):
     """Pulls in config file and returns a queriable python dictionary."""
@@ -43,7 +46,7 @@ def genArray(width, height, hexHeight, alternateRows, **kwargs):
 def gencolourMap( yMax, colArray ):
     """Massive cheat just for the moment, thanks Griff!"""
     def colourMap(point, scatterVal):
-        colourNormal = (point[1] / yMax)+random.gauss(0, scatterVal)
+        colourNormal = (point[1] / yMax)+0.1*random.gauss(0, scatterVal)
         colourIndex = quantiseNormalToIndex( colourNormal, (len(colArray))) 
         outPoint = (point[0], point[1], colourIndex)
         return outPoint
